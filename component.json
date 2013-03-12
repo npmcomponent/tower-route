@@ -12,9 +12,7 @@
   ],
   "dependencies": {
     "component-path-to-regexp": "*",
-    "component-emitter": "*",
-    "tower-container": "*",
-    "tower-controller": "*"
+    "component-emitter": "*"
   },
   "scripts": ["index.js"],
   "styles": [],

@@ -232,3 +232,16 @@ Route.prototype.match = function(path, params){
 
   return true;
 };
+
+/**
+ * Process a request given a context.
+ *
+ * @param {Context} ctx
+ * @api public
+ */
+
+Route.prototype.handle = function(ctx, next){
+  if (!this.match(ctx.path, ctx.params)) return next();
+  
+  // XXX: handle other stuff here.
+};
