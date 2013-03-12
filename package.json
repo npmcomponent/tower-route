@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "main": "./index.js",
   "dependencies": {
-    "component-path-to-regexp": "*",
-    "component-emitter": "*",
+    "path-to-regexp": "*",
+    "emitter-component": "*",
     "tower-container": "*",
     "tower-controller": "*"
   },
