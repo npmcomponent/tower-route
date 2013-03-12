@@ -2,7 +2,12 @@
   "name": "tower-route",
   "version": "0.0.1",
   "main": "./index.js",
-  "author": "Lance Pollard <lancejpollard@gmail.com>",
+  "dependencies": {
+    "component-path-to-regexp": "*",
+    "component-emitter": "*",
+    "tower-container": "*",
+    "tower-controller": "*"
+  },
   "devDependencies": {
     "chai": "~1.4.2",
     "mocha": "~1.8.1"

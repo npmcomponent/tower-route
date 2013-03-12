@@ -3,9 +3,18 @@
   "repo": "component/tower-route",
   "description": "Tower Route component",
   "version": "0.0.1",
-  "keywords": [],
-  "author": "Lance Pollard <lancejpollard@gmail.com>",
+  "keywords": [
+    "tower",
+    "mvc",
+    "router",
+    "node.js",
+    "browser"
+  ],
   "dependencies": {
+    "component-path-to-regexp": "*",
+    "component-emitter": "*",
+    "tower-container": "*",
+    "tower-controller": "*"
   },
   "scripts": ["index.js"],
   "styles": [],
