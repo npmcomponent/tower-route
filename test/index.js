@@ -67,6 +67,18 @@ describe('serverTest', function() {
     assert.deepEqual(['json', 'html'], route('users.show').accepts);
   })
 
+  it('should allow specifying event handlers', function(){
+    var connect = function(){}
+
+    route('/:username', 'users.show')
+      .on('connect', connect);
+
+    var i = route('users.show');
+
+    assert.equal(1, i.events.length);
+    assert.deepEqual([['connect', connect]], i.events);
+  })
+
   describe('instance', function(){
     it('should find a controller', function(){
       // XXX: this should be lazily constructed.
@@ -75,7 +87,11 @@ describe('serverTest', function() {
       var Route = route('/:username', 'users.show');
       var r = new Route(container);
 
-      console.log(r.controller())
+      assert.equal(r.controller(), controller('users.show').instance());
+    })
+
+    it('should trigger event handlers', function(){
+
     })
   })
 });
