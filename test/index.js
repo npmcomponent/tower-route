@@ -1,4 +1,5 @@
 var route = require('../lib/index')
+  , Context = route.Context
   , container = require('tower-container')
   , controller = require('tower-controller')
   , assert = require('chai').assert;
@@ -84,10 +85,10 @@ describe('serverTest', function() {
       // XXX: this should be lazily constructed.
       controller('users.show');
 
-      var Route = route('/:username', 'users.show');
-      var r = new Route(container);
+      var r = route('/:username', 'users.show');
+      var context = new Context(r, container);
 
-      assert.equal(r.controller(), controller('users.show').instance());
+      assert.equal(context.controller(), controller('users.show').instance());
     })
 
     it('should trigger event handlers', function(){
