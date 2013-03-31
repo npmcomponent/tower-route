@@ -1,12 +1,11 @@
-var route = require('../lib/index')
+var route = require('..')
   , Context = route.Context
   , container = require('tower-container')
-  , controller = require('tower-controller')
   , assert = require('chai').assert;
 
 describe('serverTest', function() {
   beforeEach(function(){
-    container.clear();
+    //container.clear();
   });
 
   it('should define', function() {
@@ -21,7 +20,6 @@ describe('serverTest', function() {
     assert.equal('index', i.id);
     assert.equal(/^\/\/?$/i.toString(), i.regexp.toString());
     assert.equal('GET', i.method);
-    assert.equal('index', i.controllerName);
     assert.equal(0, i.keys.length);
 
     var i = route('posts.index');
@@ -30,7 +28,6 @@ describe('serverTest', function() {
     assert.equal('posts.index', i.id);
     assert.equal(/^\/posts\/?$/i.toString(), i.regexp.toString());
     assert.equal('GET', i.method);
-    assert.equal('posts.index', i.controllerName);
     assert.equal(0, i.keys.length);
 
     var i = route('posts.create');
@@ -39,7 +36,6 @@ describe('serverTest', function() {
     assert.equal('posts.create', i.id);
     assert.equal(/^\/posts\/?$/i.toString(), i.regexp.toString());
     assert.equal('POST', i.method);
-    assert.equal('posts.create', i.controllerName);
     assert.equal(0, i.keys.length);
   })
 
@@ -48,17 +44,9 @@ describe('serverTest', function() {
 
     var i = route('users.show');
 
-    assert.equal('users.show', i.controllerName);
     assert.equal(/^\/(?:([^\/]+?))\/?$/i.toString(), i.regexp.toString());
     assert.equal(1, i.keys.length);
     assert.deepEqual([ { name: 'username', optional: false } ], i.keys);
-  })
-
-  it('should allow specifying the controller', function(){
-    route('/:username', 'users.show')
-      .controller('user');
-
-    assert.equal('user', route('users.show').controllerName);
   })
 
   it('should allow specifying the accepted content types', function(){
@@ -78,21 +66,5 @@ describe('serverTest', function() {
 
     assert.equal(1, i.events.length);
     assert.deepEqual([['connect', connect]], i.events);
-  })
-
-  describe('instance', function(){
-    it('should find a controller', function(){
-      // XXX: this should be lazily constructed.
-      controller('users.show');
-
-      var r = route('/:username', 'users.show');
-      var context = new Context(r, container);
-
-      assert.equal(context.controller(), controller('users.show').instance());
-    })
-
-    it('should trigger event handlers', function(){
-
-    })
   })
 });

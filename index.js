@@ -5,14 +5,55 @@
 
 var Emitter = require('emitter-component')
   , pathToRegexp = require('path-to-regexp')
+  , container = require('tower-container')
   , slice = [].slice
   , context;
+
+container.ns('route');
+
+/**
+ * Expose `route`.
+ */
+
+module.exports = route;
 
 /**
  * Expose `Route`.
  */
 
-module.exports = Route;
+module.exports.Route = Route;
+
+/**
+ * Find or define a route.
+ *
+ * @param {String} name
+ * @param {String} path
+ * @param {Object} [options]
+ * @api public
+ */
+
+function route(name, path, options) {  
+  if (arguments.length == 1)
+    return container.instance('route', name);
+
+  options || (options = {});
+
+  if ('/' == name.charAt(0)) {
+    options.name = path;
+    options.path = name;
+  } else {
+    options.name = name;
+    options.path = path;
+  }
+
+  var newRoute = new Route(options);
+
+  container.instance('route', newRoute.id, newRoute);
+
+  //use(newRoute);
+
+  return newRoute;
+}
 
 /**
  * Instantiate a new `Route`.
@@ -243,5 +284,5 @@ Route.prototype.match = function(path, params){
 Route.prototype.handle = function(ctx, next){
   if (!this.match(ctx.path, ctx.params)) return next();
   
-  // XXX: handle other stuff here.
+  // TODO: handle other stuff here.
 };

@@ -5,8 +5,7 @@
   "dependencies": {
     "path-to-regexp": "*",
     "emitter-component": "*",
-    "tower-container": "*",
-    "tower-controller": "*"
+    "tower-container": "*"
   },
   "devDependencies": {
     "chai": "~1.4.2",
