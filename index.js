@@ -50,10 +50,18 @@ function route(name, path, options) {
 
   container.instance('route', newRoute.id, newRoute);
 
-  //use(newRoute);
+  use(newRoute);
 
   return newRoute;
 }
+
+var routes = route.routes = [];
+
+function use(route){
+  routes.push(function(ctx, next){
+    route.handle(ctx, next);
+  });
+};
 
 /**
  * Instantiate a new `Route`.
@@ -267,5 +275,22 @@ Route.prototype.match = function(path, params){
 Route.prototype.handle = function(ctx, next){
   if (!this.match(ctx.path, ctx.params)) return next();
   
-  // TODO: handle other stuff here.
+  var i = -1
+    , middlewares = this.middlewares;
+
+  function handle() {
+    i++;
+
+    if (!middlewares[i])
+      return next();
+
+    if (2 == middlewares[i].length) {
+      middlewares[i].call(ctx, ctx, handle);
+    } else {
+      middlewares[i].call(ctx, ctx);
+      handle();
+    }
+  }
+
+  handle();
 };
