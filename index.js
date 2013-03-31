@@ -47,21 +47,9 @@ function route(name, path, options) {
   }
 
   var newRoute = new Route(options);
-
   container.instance('route', newRoute.id, newRoute);
-
-  use(newRoute);
-
   return newRoute;
 }
-
-var routes = route.routes = [];
-
-function use(route){
-  routes.push(function(ctx, next){
-    route.handle(ctx, next);
-  });
-};
 
 /**
  * Instantiate a new `Route`.
@@ -162,10 +150,10 @@ Route.prototype.use = function(fn){
  */
 
 Route.prototype.accept = function(){
-  slice.call(arguments).forEach(function(type){
-    this.accepts.push(type);
-  }, this);
-
+  var accepts = slice.call(arguments);
+  for (var i = 0, n = accepts.length; i < n; i++) {
+    this.accepts.push(accepts[i]);
+  }
   return this;
 }
 
@@ -178,7 +166,7 @@ Route.prototype.accept = function(){
  * @api public
  */
 
-Route.prototype.on = function() {
+Route.prototype.on = function(){
   this.events.push(slice.call(arguments));
   return this;
 }
@@ -198,7 +186,7 @@ Route.prototype.on = function() {
  * @api public
  */
 
-Route.prototype.format = function(format, fn) {
+Route.prototype.format = function(format, fn){
   this.formats[format] = fn;
   return this;
 }

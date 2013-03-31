@@ -66,36 +66,4 @@ describe('serverTest', function() {
     assert(1 == i.events.length);
     // assert([['connect', connect]], i.events);
   })
-
-  it('should execute routes', function(done){
-    route('/', 'index')
-      .use(function(ctx, fn){
-        fn();
-      })
-      .on('error', function(){
-
-      })
-
-    route('posts.index', '/posts')
-
-    get('/', function(){
-      console.log('done');
-      done();
-    });
-  });
 });
-
-function get(path, done) {
-  var i = 0;
-
-  var ctx = { params: {}, path: path };
-
-  function next() {
-    if (!route.routes[i])
-      return done();
-
-    route.routes[i++](ctx, next);
-  }
-
-  next();
-}
