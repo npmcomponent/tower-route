@@ -65,5 +65,23 @@ describe('serverTest', function() {
 
     assert(1 == i.events.length);
     // assert([['connect', connect]], i.events);
-  })
+  });
+
+  it('should parse params', function(done){
+    var params = {
+        likes: '10'
+      , published: '0'
+    };
+
+    var context = { path: '/posts', params: params };
+
+    route('/posts', 'posts.index')
+      .param('likes', 'integer')
+      .param('published', 'boolean')
+      .handle(context, function(){
+        assert(10 === params.likes);
+        //assert(false === params.published);
+        done();
+      });
+  });
 });

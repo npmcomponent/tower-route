@@ -262,6 +262,8 @@ Route.prototype.match = function(path, params){
 
 Route.prototype.handle = function(ctx, next){
   if (!this.match(ctx.path, ctx.params)) return next();
+
+  this.parseParams(ctx);
   
   var i = -1
     , middlewares = this.middlewares;
@@ -282,3 +284,13 @@ Route.prototype.handle = function(ctx, next){
 
   handle();
 };
+
+Route.prototype.parseParams = function(ctx){
+  for (var key in this.params) {
+    if (ctx.params.hasOwnProperty(key)) {
+      // TODO: serialize params
+      // tower typecast
+      ctx.params[key] = parseInt(ctx.params[key]);
+    }
+  }
+}
