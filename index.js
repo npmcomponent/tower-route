@@ -75,7 +75,6 @@ function Route(options) {
   this.validators = [];
   this.accepts = [];
   this.middlewares = [];
-  this.controllerName = this.id;
 }
 
 /**
@@ -126,22 +125,6 @@ Route.prototype.type = function(type){
 
 Route.prototype.validate = function(){
   context.validators.push(slice.call(arguments));
-  return this;
-}
-
-/**
- * The default controller used for this route.
- *
- * If not defined, it defaults to a controller
- * named after the route. If that controller
- * doesn't exist, it will be created (lazily).
- *
- * @param {String} name
- * @api public
- */
-
-Route.prototype.controller = function(name){
-  this.controllerName = name;
   return this;
 }
 
