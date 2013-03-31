@@ -48,8 +48,11 @@ function route(name, path, options) {
 
   var newRoute = new Route(options);
   container.instance('route', newRoute.id, newRoute);
+  route.emit('define', newRoute); // vs. remove
   return newRoute;
 }
+
+Emitter(route);
 
 /**
  * Instantiate a new `Route`.

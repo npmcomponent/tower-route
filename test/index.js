@@ -97,4 +97,14 @@ describe('serverTest', function() {
         done();
       });
   });
+
+  it('should emit when route is defined', function(done){
+    route.on('define', function(r){
+      assert('index' == r.id);
+      route.off('define');
+      done();
+    });
+
+    route('/', 'index');
+  });
 });
