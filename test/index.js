@@ -84,4 +84,17 @@ describe('serverTest', function() {
         done();
       });
   });
+
+  it('should serialize to format', function(done){
+    var context = { path: '/', params: {}, format: 'json' };
+
+    route('/', 'index')
+      .format('json', function(context){
+        
+      })
+      .handle(context, function(){
+        //assert(false === params.published);
+        done();
+      });
+  });
 });
