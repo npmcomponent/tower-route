@@ -15,6 +15,5 @@
     "component-emitter": "*"
   },
   "scripts": ["index.js"],
-  "styles": [],
   "license": "MIT"
 }

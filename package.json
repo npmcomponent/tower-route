@@ -4,7 +4,6 @@
   "main": "./index.js",
   "dependencies": {
     "path-to-regexp": "*",
-    "emitter-component": "*",
-    "tower-container": "*"
+    "emitter-component": "*"
   }
 }

@@ -5,11 +5,8 @@
 
 var Emitter = require('emitter-component')
   , pathToRegexp = require('path-to-regexp')
-  , container = require('tower-container')
   , slice = [].slice
   , context;
-
-container.ns('route');
 
 /**
  * Expose `route`.
@@ -33,8 +30,8 @@ module.exports.Route = Route;
  */
 
 function route(name, path, options) {  
-  if (arguments.length == 1)
-    return container.instance('route', name);
+  if (1 == arguments.length && routes[name])
+    return routes [name];
 
   options || (options = {});
 
@@ -47,10 +44,20 @@ function route(name, path, options) {
   }
 
   var newRoute = new Route(options);
-  container.instance('route', newRoute.id, newRoute);
-  route.emit('define', newRoute); // vs. remove
+  routes[newRoute.id] = newRoute;
+  routes.push(newRoute);
   return newRoute;
 }
+
+/**
+ * Routes array.
+ */
+
+var routes = route.routes = [];
+
+/**
+ * Mixin `Emitter`.
+ */
 
 Emitter(route);
 
