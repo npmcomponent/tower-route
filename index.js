@@ -3,7 +3,7 @@
  * Module dependencies.
  */
 
-var Emitter = require('emitter-component')
+var Emitter = 'undefined' == typeof window ? require('emitter-component') : require('emitter')
   , pathToRegexp = require('path-to-regexp')
   , slice = [].slice
   , context;
@@ -22,6 +22,15 @@ module.exports.Route = Route;
 
 /**
  * Find or define a route.
+ *
+ * Examples:
+ *
+ *    route('/posts', 'posts.index')
+ *    route('/posts', 'posts.index', 'GET')
+ *    route('/posts', 'posts.index', { method: 'GET' })
+ *    route('/posts', { name: 'posts.index', method: 'GET' })
+ *    route({ path: '/posts', name: 'posts.index', method: 'GET' })
+ *    route('posts.index')
  *
  * @param {String} name
  * @param {String} path
@@ -46,6 +55,7 @@ function route(name, path, options) {
   var newRoute = new Route(options);
   routes[newRoute.id] = newRoute;
   routes.push(newRoute);
+  route.emit('define', newRoute);
   return newRoute;
 }
 

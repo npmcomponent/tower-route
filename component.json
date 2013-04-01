@@ -1,6 +1,6 @@
 {
   "name": "tower-route",
-  "repo": "component/tower-route",
+  "repo": "tower/route",
   "description": "Tower Route component",
   "version": "0.0.1",
   "keywords": [
@@ -11,8 +11,8 @@
     "browser"
   ],
   "dependencies": {
-    "component-path-to-regexp": "*",
-    "component-emitter": "*"
+    "component/path-to-regexp": "*",
+    "component/emitter": "*"
   },
   "scripts": ["index.js"],
   "license": "MIT"
