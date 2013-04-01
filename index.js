@@ -202,22 +202,6 @@ Route.prototype.format = function(format, fn){
 }
 
 /**
- * XXX: TODO
- */
-
-Route.prototype.resource = function(name){
-
-}
-
-/**
- * XXX: TODO
- */
-
-Route.prototype.resources = function(name){
-
-}
-
-/**
  * Clear the chainable API context.
  */
 
