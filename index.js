@@ -85,7 +85,6 @@ function Route(options) {
     , options.sensitive
     , options.strict);
 
-  this.events = [];
   this.formats = {};
   this.params = {};
   this.validators = [];
@@ -170,24 +169,12 @@ Route.prototype.use = function(fn){
  */
 
 Route.prototype.accept = function(){
-  var accepts = slice.call(arguments);
-  for (var i = 0, n = accepts.length; i < n; i++) {
-    this.accepts.push(accepts[i]);
-  }
-  return this;
-}
+  var n = arguments.length
+    , accepts = new Array(n);
 
-/**
- * Event handlers which will be used on the `Context`.
- *
- * @param {String} name
- * @param {Function} fn Any number of functions, which
- *    will be called in sequence on this event.
- * @api public
- */
+  for (var i = 0; i < n; i++)
+    this.accepts.push(arguments[i]);
 
-Route.prototype.on = function(){
-  this.events.push(slice.call(arguments));
   return this;
 }
 
