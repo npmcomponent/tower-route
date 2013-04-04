@@ -55,17 +55,17 @@ describe('serverTest', function() {
     assert(['json', 'html'].join(',') == route('users.show').accepts.join(','));
   })
 
-  it('should allow specifying event handlers', function(){
-    var connect = function(){}
-
-    route('/:username', 'users.show')
-      .on('connect', connect);
-
-    var i = route('users.show');
-
-    assert(1 == i.events.length);
-    // assert([['connect', connect]], i.events);
-  });
+  //it('should allow specifying event handlers', function(){
+  //  var connect = function(){}
+//
+  //  route('/:username', 'users.show')
+  //    .on('connect', connect);
+//
+  //  var i = route('users.show');
+//
+  //  assert(1 == i.events.length);
+  //  // assert([['connect', connect]], i.events);
+  //});
 
   it('should parse params', function(done){
     var params = {
@@ -85,17 +85,63 @@ describe('serverTest', function() {
       });
   });
 
-  it('should serialize to format', function(done){
-    var context = { path: '/', params: {}, format: 'json' };
+  describe('events', function(){
+    it('should execute enter -> entered -> exit -> exited', function(done){
+      var context = {
+          path: '/'
+        , params: {}
+        , format: 'json'
+      };
 
-    route('/', 'index')
-      .format('json', function(context){
-        
-      })
-      .handle(context, function(){
-        //assert(false === params.published);
-        done();
-      });
+      route('/', 'index')
+        //.on('enter', function(context){
+        .enter(function(context){
+          context.enterCalled = true;
+          // render shouldn't be called first
+          assert(undefined === context.renderCalled);
+        })
+        // you can use render by itself, don't need enter or exit.
+        .render(function(){
+          context.renderCalled = true;
+          // enter should have been called first
+          assert(true === context.enterCalled);
+        })
+        //.on('exit', function(){
+        .exit(function(context){
+          context.exitCalled = true;
+        })
+        //.render('json', function(context){
+        //  context.data
+        //})
+        .handle(context, function(){
+          //assert(false === params.published);
+          assert(true === context.enterCalled);
+          assert(true === context.renderCalled);
+          assert(undefined === context.exitCalled);
+          //assert(true === context.entered);
+          done();
+        });
+    });
+  })
+
+  describe('format', function(){
+    it('should serialize to JSON', function(done){
+      var context = {
+          path: '/'
+        , params: {}
+        , format: 'json'
+      };
+
+      route('/', 'index')
+        .accept('json')
+        //.render('json', function(context){
+        //  context.data
+        //})
+        .handle(context, function(){
+          //assert(false === params.published);
+          done();
+        });
+    });
   });
 
   //it('should emit when route is defined', function(done){

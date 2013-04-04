@@ -90,6 +90,9 @@ function Route(options) {
   this.validators = [];
   this.accepts = [];
   this.middlewares = [];
+  //this._callbacks = {};
+  this._enter = [];
+  this._exit = [];
 }
 
 /**
@@ -193,8 +196,24 @@ Route.prototype.accept = function(){
  * @api public
  */
 
-Route.prototype.format = function(format, fn){
-  this.formats[format] = fn;
+Route.prototype.render = function(format, fn){
+  if ('function' == typeof format)
+    this.formats['*'] = format;
+  else
+    this.formats[format] = fn;
+
+  return this;
+}
+
+// setup/enter/before/render/action
+Route.prototype.enter = function(fn){
+  this._enter.push(fn);
+  return this;
+}
+
+// teardown/exit/after
+Route.prototype.exit = function(fn){
+  this._exit.push(fn);
   return this;
 }
 
@@ -247,33 +266,25 @@ Route.prototype.match = function(path, params){
 /**
  * Process a request given a context.
  *
- * @param {Context} ctx
+ * @param {Context} context
  * @api public
  */
 
-Route.prototype.handle = function(ctx, next){
-  if (!this.match(ctx.path, ctx.params)) return next();
+Route.prototype.handle = function(context, next){
+  if (!this.match(context.path, context.params)) return next();
 
-  this.parseParams(ctx);
-  
-  var i = -1
-    , middlewares = this.middlewares;
+  this.parseParams(context);
 
-  function handle() {
-    i++;
-
-    if (!middlewares[i])
-      return next();
-
-    if (2 == middlewares[i].length) {
-      middlewares[i].call(ctx, ctx, handle);
-    } else {
-      middlewares[i].call(ctx, ctx);
-      handle();
-    }
-  }
-
-  handle();
+  // TODO: defaults for routes?
+  // if (this._enter.length) {
+  var self = this;
+  // TODO: this can be optimized by merging it all into one final array.
+  series(self, self.middlewares, context, function(){
+    series(self, self._enter, context, function(){
+      // TODO: handle multiple formats.
+      series(self, self.formats['*'] ? [self.formats['*']] : [], context, next);
+    });
+  });
 };
 
 Route.prototype.parseParams = function(ctx){
@@ -284,4 +295,26 @@ Route.prototype.parseParams = function(ctx){
       ctx.params[key] = parseInt(ctx.params[key]);
     }
   }
+}
+
+function series(self, callbacks, context, done) {
+  if (!callbacks.length) return done();
+
+  var i = 0
+    , fn;
+ 
+  function next() {
+    if (fn = callbacks[i++]) {
+      if (2 == fn.length) {
+        fn.call(self, context, next);
+      } else {
+        fn.call(self, context);
+        next();
+      }
+    } else {
+      done();
+    }
+  }
+ 
+  next();
 }
