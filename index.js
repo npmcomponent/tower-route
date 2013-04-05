@@ -76,6 +76,8 @@ Emitter(route);
  */
 
 function Route(options) {
+  context = this;
+
   this.id = options.name;
   this.path = options.path;
   this.method = options.method || 'GET';
@@ -90,9 +92,13 @@ function Route(options) {
   this.validators = [];
   this.accepts = [];
   this.middlewares = [];
-  //this._callbacks = {};
-  this._enter = [];
-  this._exit = [];
+  this.actions = {
+      enter: []
+    , exit: []
+    , request: []
+    , connect: []
+    , disconnect: []
+  };
 }
 
 /**
@@ -205,15 +211,13 @@ Route.prototype.render = function(format, fn){
   return this;
 }
 
-// setup/enter/before/render/action
-Route.prototype.enter = function(fn){
-  this._enter.push(fn);
-  return this;
-}
+Route.prototype.action = function(name){
+  var action = this.actions[name] || (this.actions[name] = []);
 
-// teardown/exit/after
-Route.prototype.exit = function(fn){
-  this._exit.push(fn);
+  for (var i = 1, n = arguments.length; i < n; i++) {
+    action.push(arguments[i]);
+  }
+
   return this;
 }
 
@@ -222,7 +226,7 @@ Route.prototype.exit = function(fn){
  */
 
 Route.prototype.self = function(){
-  context = undefined;
+  context = this;
   return this;
 }
 
@@ -280,9 +284,11 @@ Route.prototype.handle = function(context, next){
   var self = this;
   // TODO: this can be optimized by merging it all into one final array.
   series(self, self.middlewares, context, function(){
-    series(self, self._enter, context, function(){
-      // TODO: handle multiple formats.
-      series(self, self.formats['*'] ? [self.formats['*']] : [], context, next);
+    series(self, self.actions['enter'], context, function(){
+      series(self, self.actions['request'], context, function(){
+        // TODO: handle multiple formats.
+        series(self, self.formats['*'] ? [self.formats['*']] : [], context, next);
+      });
     });
   });
 };

@@ -95,20 +95,30 @@ describe('serverTest', function() {
 
       route('/', 'index')
         //.on('enter', function(context){
-        .enter(function(context){
+        // this happens before a request or web socket connection
+        .action('enter', function(context){
           context.enterCalled = true;
           // render shouldn't be called first
           assert(undefined === context.renderCalled);
+        })
+        .action('connect', function(context){
+
+        })
+        .action('disconnect', function(context){
+
+        })
+        .action('request', function(context){
+
+        })
+        //.on('exit', function(){
+        .action('exit', function(context){
+          context.exitCalled = true;
         })
         // you can use render by itself, don't need enter or exit.
         .render(function(){
           context.renderCalled = true;
           // enter should have been called first
           assert(true === context.enterCalled);
-        })
-        //.on('exit', function(){
-        .exit(function(context){
-          context.exitCalled = true;
         })
         //.render('json', function(context){
         //  context.data
