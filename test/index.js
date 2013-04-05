@@ -98,6 +98,7 @@ describe('serverTest', function() {
         // this happens before a request or web socket connection
         .action('enter', function(context){
           context.enterCalled = true;
+          assert(undefined === context.requestCalled);
           // render shouldn't be called first
           assert(undefined === context.renderCalled);
         })
@@ -108,7 +109,8 @@ describe('serverTest', function() {
 
         })
         .action('request', function(context){
-
+          context.requestCalled = true;
+          assert(undefined === context.renderCalled);
         })
         //.on('exit', function(){
         .action('exit', function(context){
@@ -126,6 +128,7 @@ describe('serverTest', function() {
         .handle(context, function(){
           //assert(false === params.published);
           assert(true === context.enterCalled);
+          assert(true === context.requestCalled);
           assert(true === context.renderCalled);
           assert(undefined === context.exitCalled);
           //assert(true === context.entered);
