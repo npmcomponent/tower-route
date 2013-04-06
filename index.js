@@ -288,21 +288,27 @@ Route.prototype.handle = function(context, next){
   // if (this._enter.length) {
   var self = this;
 
-  // TODO: this can be optimized by merging it all into one final array.
-  series(self, self.middlewares, context, function(){
-    series(self, self.actions['enter'], context, function(){
-      series(self, self.actions[context.event], context, function(){
-        // req.accepted[0].subtype
-        // req.ip
-        // http://expressjs.com/api.html
-        // req.xhr
-        // req.subdomains
-        // req.acceptedLanguages for tower-inflector
-        // TODO: handle multiple formats.
-        series(self, self.formats['*'] ? [self.formats['*']] : [], context, next);
+  try {
+    // TODO: this can be optimized by merging it all into one final array.
+    series(self, self.middlewares, context, function(){
+      series(self, self.actions['enter'], context, function(){
+        series(self, self.actions[context.event], context, function(){
+          // req.accepted[0].subtype
+          // req.ip
+          // http://expressjs.com/api.html
+          // req.xhr
+          // req.subdomains
+          // req.acceptedLanguages for tower-inflector
+          // TODO: handle multiple formats.
+          series(self, self.formats['*'] ? [self.formats['*']] : [], context, next);
+        });
       });
     });
-  });
+  } catch (e) {
+    //self.emit(500, e);
+    context.error = e;
+    series(self, self.actions['500'], context, function(){})
+  }
 };
 
 Route.prototype.on = Route.prototype.action;
