@@ -202,11 +202,13 @@ Route.prototype.accept = function(){
  * @api public
  */
 
-Route.prototype.render = function(format, fn){
-  if ('function' == typeof format)
+Route.prototype.format = function(format, fn){
+  if ('function' == typeof format) {
     this.formats['*'] = format;
-  else
+  } else {
     this.formats[format] = fn;
+    this.accepts.push(format);
+  }
 
   return this;
 }
@@ -280,6 +282,7 @@ Route.prototype.handle = function(context, next){
   this.parseParams(context);
 
   context.event || (context.event = 'request');
+  context.route = this;
 
   // TODO: defaults for routes?
   // if (this._enter.length) {
