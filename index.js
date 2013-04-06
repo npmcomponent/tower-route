@@ -282,16 +282,25 @@ Route.prototype.handle = function(context, next){
   // TODO: defaults for routes?
   // if (this._enter.length) {
   var self = this;
+
   // TODO: this can be optimized by merging it all into one final array.
   series(self, self.middlewares, context, function(){
     series(self, self.actions['enter'], context, function(){
       series(self, self.actions['request'], context, function(){
+        // req.accepted[0].subtype
+        // req.ip
+        // http://expressjs.com/api.html
+        // req.xhr
+        // req.subdomains
+        // req.acceptedLanguages for tower-inflector
         // TODO: handle multiple formats.
         series(self, self.formats['*'] ? [self.formats['*']] : [], context, next);
       });
     });
   });
 };
+
+Route.prototype.on = Route.prototype.action;
 
 Route.prototype.parseParams = function(ctx){
   for (var key in this.params) {
@@ -309,7 +318,12 @@ function series(self, callbacks, context, done) {
   var i = 0
     , fn;
  
-  function next() {
+  function next(err) {
+    if (err || context.isCancelled || context.errors) {
+      done(err || context.errors);
+      return;
+    }
+
     if (fn = callbacks[i++]) {
       if (2 == fn.length) {
         fn.call(self, context, next);
