@@ -3,9 +3,7 @@ var route = require('..')
   , container = require('tower-container');
 
 describe('serverTest', function() {
-  beforeEach(function(){
-    container.clear();
-  });
+  beforeEach(route.clear);
 
   it('should define', function() {
     route('/', 'index')
@@ -155,6 +153,20 @@ describe('serverTest', function() {
           done();
         });
     });
+  });
+
+  it('should add mixin', function(done){
+    var calls = [];
+
+    function renderer(_route) {
+      calls.push(_route.name);
+
+      assert('admin' === calls[0]);
+      done();
+    }
+
+    route.use(renderer);
+    route('/admin', 'admin');
   });
 
   //it('should emit when route is defined', function(done){

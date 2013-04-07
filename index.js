@@ -64,10 +64,21 @@ function route(name, path, options) {
  * Add mixin to routes.
  */
 
-route.mixin = function(fn){
-  fn.apply(Route.prototype);
+route.use = function(fn){
+  mixins.push(fn);
   return route;
 }
+
+/**
+ * Remove all routes.
+ */
+
+route.clear = function(){
+  mixins.length = 0;
+  route.routes.length = 0;
+}
+
+var mixins = [];
 
 /**
  * Routes array.
@@ -88,7 +99,7 @@ Emitter(route);
 function Route(options) {
   context = this;
 
-  this.id = options.name;
+  this.id = this.name = options.name;
   this.path = options.path;
   this.method = options.method || 'GET';
   this.regexp = pathToRegexp(
@@ -344,3 +355,13 @@ function series(self, callbacks, context, done) {
  
   next();
 }
+
+/**
+ * Apply all mixins
+ */
+
+route.on('define', function(_route){
+  for (var i = 0, n = mixins.length; i < n; i++) {
+    mixins[i](_route);
+  }
+});
