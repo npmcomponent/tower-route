@@ -301,6 +301,8 @@ Route.prototype.handle = function(context, next){
     context.error = e;
     series(self, self.actions['500'], context, function(){})
   }
+  
+  return true;
 };
 
 Route.prototype.on = Route.prototype.action;
