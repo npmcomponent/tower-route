@@ -5,6 +5,7 @@
 
 var Emitter = 'undefined' == typeof window ? require('emitter-component') : require('emitter')
   , pathToRegexp = require('path-to-regexp')
+  //, series = require('part-async-series')
   , slice = [].slice
   , context;
 
