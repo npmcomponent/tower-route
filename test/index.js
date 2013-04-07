@@ -159,14 +159,15 @@ describe('serverTest', function() {
     var calls = [];
 
     function renderer(_route) {
-      calls.push(_route.name);
+      calls.push(_route.path);
 
-      assert('admin' === calls[0]);
+      assert('/admin' === calls[0]);
       done();
     }
 
     route.use(renderer);
     route('/admin', 'admin');
+    route('admin')
   });
 
   //it('should emit when route is defined', function(done){
