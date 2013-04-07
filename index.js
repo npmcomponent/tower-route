@@ -60,6 +60,15 @@ function route(name, path, options) {
 }
 
 /**
+ * Add mixin to routes.
+ */
+
+route.mixin = function(fn){
+  fn.apply(Route.prototype);
+  return route;
+}
+
+/**
  * Routes array.
  */
 
@@ -89,7 +98,6 @@ function Route(options) {
 
   this.formats = {};
   this.params = {};
-  this.validators = [];
   this.accepts = [];
   this.middlewares = [];
   this.actions = {
@@ -133,22 +141,6 @@ Route.prototype.param = function(name, options){
 Route.prototype.type = function(type){
   // maybe it should accept an array?
   this.method = type;
-  return this;
-}
-
-/**
- * Validations to apply either to the route
- * or to a specific param.
- *
- * Can pass a function or a string followed
- * by multiple arguments. If a string is passed,
- * it will use one of the globally defined validators.
- *
- * @api public
- */
-
-Route.prototype.validate = function(){
-  context.validators.push(slice.call(arguments));
   return this;
 }
 

@@ -117,7 +117,7 @@ describe('serverTest', function() {
           context.exitCalled = true;
         })
         // you can use render by itself, don't need enter or exit.
-        .render(function(){
+        .format(function(){
           context.renderCalled = true;
           // enter should have been called first
           assert(true === context.enterCalled);
