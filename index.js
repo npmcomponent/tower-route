@@ -13,13 +13,13 @@ var Emitter = 'undefined' == typeof window ? require('emitter-component') : requ
  * Expose `route`.
  */
 
-module.exports = route;
+var exports = module.exports = route;
 
 /**
  * Expose `Route`.
  */
 
-module.exports.Route = Route;
+exports.Route = Route;
 
 /**
  * Find or define a route.
@@ -41,7 +41,7 @@ module.exports.Route = Route;
 
 function route(name, path, options) {  
   if (1 == arguments.length && routes[name])
-    return routes [name];
+    return routes[name];
 
   options || (options = {});
 
@@ -64,18 +64,18 @@ function route(name, path, options) {
  * Add mixin to routes.
  */
 
-route.use = function(fn){
+exports.use = function(fn){
   mixins.push(fn);
-  return route;
+  return exports;
 }
 
 /**
  * Remove all routes.
  */
 
-route.clear = function(){
+exports.clear = function(){
   mixins.length = 0;
-  route.routes.length = 0;
+  exports.routes.length = 0;
 }
 
 var mixins = [];
@@ -84,13 +84,13 @@ var mixins = [];
  * Routes array.
  */
 
-var routes = route.routes = [];
+var routes = exports.routes = [];
 
 /**
  * Mixin `Emitter`.
  */
 
-Emitter(route);
+Emitter(exports);
 
 /**
  * Instantiate a new `Route`.

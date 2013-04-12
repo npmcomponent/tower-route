@@ -1,11 +1,10 @@
 var route = require('..')
-  , assert = require('assert')
-  , container = require('tower-container');
+  , assert = require('assert');
 
-describe('serverTest', function() {
+describe('serverTest', function(){
   beforeEach(route.clear);
 
-  it('should define', function() {
+  it('should define', function(){
     route('/', 'index')
     route('posts.index', '/posts')
     // route('posts.create', '/posts', 'GET');
