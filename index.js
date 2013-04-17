@@ -5,6 +5,7 @@
 
 var Emitter = 'undefined' == typeof window ? require('emitter-component') : require('emitter')
   , pathToRegexp = require('path-to-regexp')
+  //, series = require('part-async-series')
   , slice = [].slice
   , context
   , app = ('undefined' == typeof window) ? require('tower-app').app : require('tower-app')
@@ -14,13 +15,13 @@ var Emitter = 'undefined' == typeof window ? require('emitter-component') : requ
  * Expose `route`.
  */
 
-module.exports = route;
+var exports = module.exports = route;
 
 /**
  * Expose `Route`.
  */
 
-module.exports.Route = Route;
+exports.Route = Route;
 
 /**
  * Find or define a route.
@@ -43,7 +44,7 @@ module.exports.Route = Route;
 function route(name, path, options) {
   if (typeof name === "object") return;
   if (1 == arguments.length && routes[name])
-    return routes [name];
+    return routes[name];
 
   options || (options = {});
 
@@ -67,22 +68,33 @@ function route(name, path, options) {
  * Add mixin to routes.
  */
 
-route.mixin = function(fn){
-  fn.apply(Route.prototype);
-  return route;
+exports.use = function(fn){
+  mixins.push(fn);
+  return exports;
 }
+
+/**
+ * Remove all routes.
+ */
+
+exports.clear = function(){
+  mixins.length = 0;
+  exports.routes.length = 0;
+}
+
+var mixins = [];
 
 /**
  * Routes array.
  */
 
-var routes = route.routes = [];
+var routes = exports.routes = [];
 
 /**
  * Mixin `Emitter`.
  */
 
-Emitter(route);
+Emitter(exports);
 
 /**
  * Instantiate a new `Route`.
@@ -91,7 +103,7 @@ Emitter(route);
 function Route(options) {
   context = this;
 
-  this.id = options.name;
+  this.id = this.name = options.name;
   this.path = options.path;
   this.method = options.method || 'GET';
   this.regexp = pathToRegexp(
@@ -308,6 +320,8 @@ Route.prototype.handle = function(context, next){
     context.error = e;
     series(self, self.actions['500'], context, function(){})
   }
+  
+  return true;
 };
 
 Route.prototype.on = Route.prototype.action;
@@ -377,3 +391,13 @@ function series(self, callbacks, context, done) {
 
   next();
 }
+
+/**
+ * Apply all mixins
+ */
+
+route.on('define', function(_route){
+  for (var i = 0, n = mixins.length; i < n; i++) {
+    mixins[i](_route);
+  }
+});

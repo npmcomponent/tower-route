@@ -4,6 +4,7 @@
   "main": "./index.js",
   "dependencies": {
     "path-to-regexp": "*",
+    "part-async-series": "*",
     "emitter-component": "*"
   }
 }

@@ -1,13 +1,10 @@
 var route = require('..')
-  , assert = require('assert')
-  , container = require('tower-container');
+  , assert = require('assert');
 
-describe('serverTest', function() {
-  beforeEach(function(){
-    container.clear();
-  });
+describe('serverTest', function(){
+  beforeEach(route.clear);
 
-  it('should define', function() {
+  it('should define', function(){
     route('/', 'index')
     route('posts.index', '/posts')
     // route('posts.create', '/posts', 'GET');
@@ -155,6 +152,21 @@ describe('serverTest', function() {
           done();
         });
     });
+  });
+
+  it('should add mixin', function(done){
+    var calls = [];
+
+    function renderer(_route) {
+      calls.push(_route.path);
+
+      assert('/admin' === calls[0]);
+      done();
+    }
+
+    route.use(renderer);
+    route('/admin', 'admin');
+    route('admin')
   });
 
   //it('should emit when route is defined', function(done){
