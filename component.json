@@ -12,7 +12,8 @@
   ],
   "dependencies": {
     "component/path-to-regexp": "*",
-    "component/emitter": "*"
+    "tower/emitter": "*",
+    "part/async-series": "*"
   },
   "scripts": ["index.js"],
   "license": "MIT"

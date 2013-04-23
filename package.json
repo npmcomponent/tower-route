@@ -5,6 +5,6 @@
   "dependencies": {
     "path-to-regexp": "*",
     "part-async-series": "*",
-    "emitter-component": "*"
+    "tower-emitter": "*"
   }
 }
