@@ -13,7 +13,7 @@ var Emitter = require('tower-emitter')
  * Expose `route`.
  */
 
-var exports = module.exports = route;
+exports = module.exports = route;
 
 /**
  * Expose `Route`.
