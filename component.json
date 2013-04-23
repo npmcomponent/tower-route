@@ -10,6 +10,12 @@
     "node.js",
     "browser"
   ],
+  "local": [
+    "app"
+  ],
+  "paths": [
+    "./../"
+  ],
   "dependencies": {
     "component/path-to-regexp": "*",
     "tower/emitter": "*",

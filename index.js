@@ -7,7 +7,9 @@ var Emitter = require('tower-emitter')
   , pathToRegexp = require('path-to-regexp')
   //, series = require('part-async-series')
   , slice = [].slice
-  , context;
+  , context
+  , app = ('undefined' == typeof window) ? require('tower-app').app : require('tower-app')
+  , view = ('undefined' == typeof window) ? require('tower-server-view') : require('tower-view');
 
 /**
  * Expose `route`.
@@ -39,7 +41,8 @@ exports.Route = Route;
  * @api public
  */
 
-function route(name, path, options) {  
+function route(name, path, options) {
+  if (typeof name === "object") return;
   if (1 == arguments.length && routes[name])
     return routes[name];
 
@@ -56,6 +59,7 @@ function route(name, path, options) {
   var newRoute = new Route(options);
   routes[newRoute.id] = newRoute;
   routes.push(newRoute);
+
   route.emit('define', newRoute);
   return newRoute;
 }
@@ -176,7 +180,7 @@ Route.prototype.use = function(fn){
  * Accepted `Content-Type`s.
  *
  * If not specified, it will accept any.
- * 
+ *
  * @param {String|Arguments} arguments
  * @api public
  */
@@ -250,7 +254,7 @@ Route.prototype.match = function(path, params){
   var keys = this.keys
     , qsIndex = path.indexOf('?')
     , pathname = ~qsIndex ? path.slice(0, qsIndex) : path
-    , m = this.regexp.exec(pathname);
+    , m = (this.regexp instanceof RegExp) ? this.regexp.exec(pathname) : new RegExp(this.regexp).exec(pathname);
 
   if (!m) return false;
 
@@ -310,6 +314,9 @@ Route.prototype.handle = function(context, next){
     });
   } catch (e) {
     //self.emit(500, e);
+    // Errors that occurs won't be caught but an error
+    // within the `series` method will.
+    throw e;
     context.error = e;
     series(self, self.actions['500'], context, function(){})
   }
@@ -327,14 +334,43 @@ Route.prototype.parseParams = function(ctx){
       ctx.params[key] = parseInt(ctx.params[key]);
     }
   }
-}
+};
+
+/**
+ * XXX: tmp for now.
+ * XXX: Implement template caching. This will only cache
+ *      the raw html files and hold it in memory.
+ *      The bundler will delete any caches of templates
+ *      if the files changes.
+ * XXX: Automatically call this method if they didn't call
+ *      it?
+ * XXX: The `name` parameter corresponds to the main view.
+ *      Fetch that view NOT the template.
+ * Render a specific view.
+ * @param  {String} name
+ */
+Route.prototype.render = function(name) {
+
+  this.format('html', function(context)
+  {
+    view.context = context;
+    view.render(name);
+  });
+
+  this.on('request', function(context)
+  {
+    context.render();
+  });
+
+};
+
 
 function series(self, callbacks, context, done) {
   if (!callbacks.length) return done();
 
   var i = 0
     , fn;
- 
+
   function next(err) {
     if (err || context.isCancelled || context.errors) {
       done(err || context.errors);
@@ -352,7 +388,7 @@ function series(self, callbacks, context, done) {
       done();
     }
   }
- 
+
   next();
 }
 
