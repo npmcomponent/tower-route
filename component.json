@@ -13,9 +13,7 @@
   "dependencies": {
     "component/path-to-regexp": "*",
     "tower/emitter": "*",
-    "part/async-series": "*",
-    "tower/client-view": "*",
-    "tower/app": "*"
+    "part/async-series": "*"
   },
   "scripts": ["index.js"],
   "license": "MIT"

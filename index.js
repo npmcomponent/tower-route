@@ -8,8 +8,7 @@ var Emitter = require('tower-emitter')
   //, series = require('part-async-series')
   , slice = [].slice
   , context
-  , app = ('undefined' == typeof window) ? require('tower-app').app : require('tower-app')
-  , view = require('tower-view');
+  //, view = require('tower-view');
 
 /**
  * Expose `route`.
