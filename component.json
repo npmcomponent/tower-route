@@ -10,16 +10,12 @@
     "node.js",
     "browser"
   ],
-  "local": [
-    "app"
-  ],
-  "paths": [
-    "./../"
-  ],
   "dependencies": {
     "component/path-to-regexp": "*",
     "tower/emitter": "*",
-    "part/async-series": "*"
+    "part/async-series": "*",
+    "tower/client-view": "*",
+    "tower/app": "*"
   },
   "scripts": ["index.js"],
   "license": "MIT"

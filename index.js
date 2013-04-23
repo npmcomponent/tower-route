@@ -9,7 +9,7 @@ var Emitter = require('tower-emitter')
   , slice = [].slice
   , context
   , app = ('undefined' == typeof window) ? require('tower-app').app : require('tower-app')
-  , view = ('undefined' == typeof window) ? require('tower-server-view') : require('tower-view');
+  , view = require('tower-view');
 
 /**
  * Expose `route`.
