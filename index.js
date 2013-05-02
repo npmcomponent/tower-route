@@ -67,12 +67,11 @@ function route(name, path, options){
     options.path = path;
   }
 
-  var newRoute = new Route(options);
-  exports.collection[newRoute.id] = newRoute;
-  exports.collection.push(newRoute);
-
-  route.emit('define', newRoute);
-  return newRoute;
+  var instance = new Route(options);
+  exports.collection[instance.id] = instance;
+  exports.collection.push(instance);
+  exports.emit('define', instance);
+  return instance;
 }
 
 /**
@@ -104,8 +103,7 @@ Emitter(exports);
  */
 
 function Route(options){
-  context = this;
-
+  this.context = this;
   this.id = this.name = options.name;
   this.path = options.path;
   this.method = options.method || 'GET';
@@ -129,44 +127,6 @@ function Route(options){
 }
 
 /**
- * Function to run a set of callbacks on an object
- * with a specified context.
- * A done callback is called at the very end.
- * 
- * @param {Object} self
- * @param {Array of callbacks} callbacks
- * @param {Context} context
- * @param {Function} done
- */
-
-function series(self, callbacks, context, done){
-  if (!callbacks.length) return done();
-
-  var i = 0
-    , fn;
-
-  function next(err){
-    if (err || context.isCancelled || context.errors) {
-      done(err || context.errors);
-      return;
-    }
-
-    if (fn = callbacks[i++]) {
-      if (2 == fn.length) {
-        fn.call(self, context, next);
-      } else {
-        fn.call(self, context);
-        next();
-      }
-    } else {
-      done();
-    }
-  }
-
-  next();
-}
-
-/**
  * Make the `Route` instance an event emitter.
  */
 
@@ -184,7 +144,7 @@ Emitter(Route.prototype);
 Route.prototype.param = function(name, options){
   options || (options = {})
   options.validators || (options.validators = {});
-  this.params[name] = context = options;
+  this.context = this.params[name] = options;
   return this;
 }
 
@@ -225,9 +185,7 @@ Route.prototype.use = function(fn){
  * @param {String|Arguments} arguments
  * @api public
  */
-actions = {
-  enter: [function() {}, function() {}]
-}
+
 Route.prototype.accept = function(){
   var n = arguments.length
     , accepts = new Array(n);
@@ -421,3 +379,41 @@ route.on('define', function(_route){
     mixins[i](_route);
   }
 });
+
+/**
+ * Function to run a set of callbacks on an object
+ * with a specified context.
+ * A done callback is called at the very end.
+ * 
+ * @param {Object} self
+ * @param {Array of callbacks} callbacks
+ * @param {Context} context
+ * @param {Function} done
+ */
+
+function series(self, callbacks, context, done){
+  if (!callbacks.length) return done();
+
+  var i = 0
+    , fn;
+
+  function next(err){
+    if (err || context.isCancelled || context.errors) {
+      done(err || context.errors);
+      return;
+    }
+
+    if (fn = callbacks[i++]) {
+      if (2 == fn.length) {
+        fn.call(self, context, next);
+      } else {
+        fn.call(self, context);
+        next();
+      }
+    } else {
+      done();
+    }
+  }
+
+  next();
+}
