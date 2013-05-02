@@ -1,14 +1,28 @@
 # Tower Route
 
-- https://github.com/LearnBoost/distribute
-- https://github.com/LearnBoost/up
+## Installation
 
+node.js:
+
+```bash
+$ npm install tower-route
 ```
-tower-route
-tower-server-router
-tower-client-router
-tower-router
-  requires client and server routers
+
+browser:
+
+```bash
+$ component install tower/route
+```
+
+## Example
+
+```js
+var route = require('tower-route');
+
+route('/welcome')
+  .on('exec', function(context, next){
+    context.render({ title: 'Hello World' });
+  });
 ```
 
 ## License
