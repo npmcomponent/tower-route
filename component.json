@@ -13,6 +13,7 @@
   "dependencies": {
     "component/path-to-regexp": "*",
     "tower/emitter": "*",
+    "tower/param": "*",
     "part/async-series": "*"
   },
   "scripts": ["index.js"],

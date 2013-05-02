@@ -5,10 +5,8 @@
 
 var Emitter = require('tower-emitter')
   , pathToRegexp = require('path-to-regexp')
-  //, series = require('part-async-series')
-  , slice = [].slice
-  , context
-  //, view = require('tower-view');
+  , param = require('tower-param')
+  //, series = require('part-async-series');
 
 /**
  * Expose `route`.
@@ -141,10 +139,8 @@ Emitter(Route.prototype);
  * @api public
  */
 
-Route.prototype.param = function(name, options){
-  options || (options = {})
-  options.validators || (options.validators = {});
-  this.context = this.params[name] = options;
+Route.prototype.param = function(name, type, options){
+  this.context = this.params[name] = param(name, type, options);
   return this;
 }
 
