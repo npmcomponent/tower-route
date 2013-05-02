@@ -112,9 +112,10 @@ function Route(options){
     , options.strict);
 
   this.formats = {};
-  this.params = {};
+  this.params = [];
   this.accepts = [];
   this.middlewares = [];
+  this.validators = [];
   this.actions = {
       enter: []
     , exit: []
@@ -141,6 +142,38 @@ Emitter(Route.prototype);
 
 Route.prototype.param = function(name, type, options){
   this.context = this.params[name] = param(name, type, options);
+  return this;
+}
+
+/**
+ * Define a validator.
+ *
+ * @param {String} key Name of the operator for assertion.
+ * @param {Mixed} val
+ * @return {this}
+ */
+
+Route.prototype.validate = function(key, val){
+  if (this === this.context)
+    // key is a function
+    this.validator(key, val)
+  else
+    // param or attr
+    this.context.validator(key, val);
+
+  return this;
+}
+
+/**
+ * Append a validator function to the stack.
+ *
+ * @param {Function} fn
+ * @return {this}
+ */
+
+exports.validator = function(fn){
+  // XXX: just a function in this case, but could handle more.
+  this.validators.push(fn);
   return this;
 }
 
