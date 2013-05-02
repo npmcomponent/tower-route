@@ -387,6 +387,7 @@ Route.prototype.parseParams = function(context){
  * Render a specific view.
  * @param  {String} name
  */
+
 Route.prototype.render = function(name){
   this.format('html', function(context){
     view.context = context;
@@ -396,16 +397,15 @@ Route.prototype.render = function(name){
   this.on('request', function(context){
     context.render();
   });
-
 };
 
 /**
- * Apply all mixins
+ * Apply all mixins.
  */
 
-route.on('define', function(_route){
+exports.on('define', function(route){
   for (var i = 0, n = mixins.length; i < n; i++) {
-    mixins[i](_route);
+    mixins[i](route);
   }
 });
 
