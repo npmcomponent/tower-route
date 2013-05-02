@@ -23,6 +23,18 @@ exports = module.exports = route;
 exports.Route = Route;
 
 /**
+ * Expose `collection`.
+ */
+
+exports.collection = [];
+
+/**
+ * Mixins array.
+ */
+ 
+var mixins = [];
+
+/**
  * Find or define a route.
  *
  * Examples:
@@ -42,8 +54,8 @@ exports.Route = Route;
 
 function route(name, path, options){
   if (typeof name === "object") return;
-  if (1 == arguments.length && routes[name])
-    return routes[name];
+  if (1 == arguments.length && exports.collection[name])
+    return exports.collection[name];
 
   options || (options = {});
 
@@ -56,15 +68,15 @@ function route(name, path, options){
   }
 
   var newRoute = new Route(options);
-  routes[newRoute.id] = newRoute;
-  routes.push(newRoute);
+  exports.collection[newRoute.id] = newRoute;
+  exports.collection.push(newRoute);
 
   route.emit('define', newRoute);
   return newRoute;
 }
 
 /**
- * Add mixin to routes.
+ * Add mixin to exports.collection.
  */
 
 exports.use = function(fn){
@@ -73,25 +85,13 @@ exports.use = function(fn){
 }
 
 /**
- * Remove all routes.
+ * Remove all exports.collection.
  */
 
 exports.clear = function(){
   mixins.length = 0;
-  exports.routes.length = 0;
+  exports.collection.length = 0;
 }
-
-/**
- * Mixins array.
- */
- 
-var mixins = [];
-
-/**
- * Routes array.
- */
-
-var routes = exports.routes = [];
 
 /**
  * Mixin `Emitter`.
@@ -335,7 +335,7 @@ Route.prototype.handle = function(context, next){
   context.event || (context.event = 'request');
   context.route = this;
 
-  // TODO: defaults for routes?
+  // TODO: defaults for exports.collection?
   // if (this._enter.length) {
   var self = this;
 
