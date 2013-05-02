@@ -33,7 +33,7 @@ describe('serverTest', function(){
     assert(/^\/posts\/?$/i.toString() == i.regexp.toString());
     assert('POST' == i.method);
     assert(0 == i.keys.length);
-  })
+  });
 
   it('should allow dynamic path segments', function(){
     route('/:username', 'users.show')
@@ -43,26 +43,14 @@ describe('serverTest', function(){
     assert(/^\/(?:([^\/]+?))\/?$/i.toString() == i.regexp.toString());
     assert(1 == i.keys.length);
     // assert([ { name: 'username', optional: false } ] == i.keys);
-  })
+  });
 
   it('should allow specifying the accepted content types', function(){
     route('/:username', 'users.show')
       .accept('json', 'html');
 
     assert(['json', 'html'].join(',') == route('users.show').accepts.join(','));
-  })
-
-  //it('should allow specifying event handlers', function(){
-  //  var connect = function(){}
-//
-  //  route('/:username', 'users.show')
-  //    .on('connect', connect);
-//
-  //  var i = route('users.show');
-//
-  //  assert(1 == i.events.length);
-  //  // assert([['connect', connect]], i.events);
-  //});
+  });
 
   it('should parse params', function(done){
     var params = {
@@ -91,7 +79,6 @@ describe('serverTest', function(){
       };
 
       route('/', 'index')
-        //.on('enter', function(context){
         // this happens before a request or web socket connection
         .action('enter', function(context){
           context.enterCalled = true;
@@ -109,7 +96,6 @@ describe('serverTest', function(){
           context.requestCalled = true;
           assert(undefined === context.renderCalled);
         })
-        //.on('exit', function(){
         .action('exit', function(context){
           context.exitCalled = true;
         })
@@ -132,7 +118,7 @@ describe('serverTest', function(){
           done();
         });
     });
-  })
+  });
 
   describe('format', function(){
     it('should serialize to JSON', function(done){
@@ -166,16 +152,15 @@ describe('serverTest', function(){
 
     route.use(renderer);
     route('/admin', 'admin');
-    route('admin')
   });
 
-  //it('should emit when route is defined', function(done){
-  //  route.on('define', function(r){
-  //    assert('index' == r.id);
-  //    route.off('define');
-  //    done();
-  //  });
-  //
-  //  route('/', 'index');
-  //});
+  it('should emit when route is defined', function(done){
+   route.on('define', function(r){
+     assert('index' == r.id);
+     route.off('define');
+     done();
+   });
+  
+   route('/', 'index');
+  });
 });

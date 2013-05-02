@@ -40,7 +40,7 @@ exports.Route = Route;
  * @api public
  */
 
-function route(name, path, options) {
+function route(name, path, options){
   if (typeof name === "object") return;
   if (1 == arguments.length && routes[name])
     return routes[name];
@@ -81,6 +81,10 @@ exports.clear = function(){
   exports.routes.length = 0;
 }
 
+/**
+ * Mixins array.
+ */
+ 
 var mixins = [];
 
 /**
@@ -99,7 +103,7 @@ Emitter(exports);
  * Instantiate a new `Route`.
  */
 
-function Route(options) {
+function Route(options){
   context = this;
 
   this.id = this.name = options.name;
@@ -122,6 +126,44 @@ function Route(options) {
     , connect: []
     , disconnect: []
   };
+}
+
+/**
+ * Function to run a set of callbacks on an object
+ * with a specified context.
+ * A done callback is called at the very end.
+ * 
+ * @param {Object} self
+ * @param {Array of callbacks} callbacks
+ * @param {Context} context
+ * @param {Function} done
+ */
+
+function series(self, callbacks, context, done){
+  if (!callbacks.length) return done();
+
+  var i = 0
+    , fn;
+
+  function next(err){
+    if (err || context.isCancelled || context.errors) {
+      done(err || context.errors);
+      return;
+    }
+
+    if (fn = callbacks[i++]) {
+      if (2 == fn.length) {
+        fn.call(self, context, next);
+      } else {
+        fn.call(self, context);
+        next();
+      }
+    } else {
+      done();
+    }
+  }
+
+  next();
 }
 
 /**
@@ -183,7 +225,9 @@ Route.prototype.use = function(fn){
  * @param {String|Arguments} arguments
  * @api public
  */
-
+actions = {
+  enter: [function() {}, function() {}]
+}
 Route.prototype.accept = function(){
   var n = arguments.length
     , accepts = new Array(n);
@@ -296,21 +340,20 @@ Route.prototype.handle = function(context, next){
   var self = this;
 
   try {
-    // TODO: this can be optimized by merging it all into one final array.
-    series(self, self.middlewares, context, function(){
-      series(self, self.actions['enter'], context, function(){
-        series(self, self.actions[context.event], context, function(){
-          // req.accepted[0].subtype
-          // req.ip
-          // http://expressjs.com/api.html
-          // req.xhr
-          // req.subdomains
-          // req.acceptedLanguages for tower-inflector
-          // TODO: handle multiple formats.
-          series(self, self.formats['*'] ? [self.formats['*']] : [], context, next);
-        });
-      });
-    });
+    var callbacks = self.middlewares.concat(
+      self.actions['enter'],
+      self.actions[context.event],
+      self.formats['*'] ? [self.formats['*']] : []
+    );
+
+    // req.accepted[0].subtype
+    // req.ip
+    // http://expressjs.com/api.html
+    // req.xhr
+    // req.subdomains
+    // req.acceptedLanguages for tower-inflector
+    // TODO: handle multiple formats.
+    series(self, callbacks, context, next);
   } catch (e) {
     //self.emit(500, e);
     // Errors that occurs won't be caught but an error
@@ -323,14 +366,23 @@ Route.prototype.handle = function(context, next){
   return true;
 };
 
+/**
+ * Alias for action.
+ */
 Route.prototype.on = Route.prototype.action;
 
-Route.prototype.parseParams = function(ctx){
+/**
+ * Parse the params from a given context.
+ *
+ * @param {Context} context
+ * @api public
+ */
+Route.prototype.parseParams = function(context){
   for (var key in this.params) {
-    if (ctx.params.hasOwnProperty(key)) {
+    if (context.params.hasOwnProperty(key)) {
       // TODO: serialize params
       // tower typecast
-      ctx.params[key] = parseInt(ctx.params[key]);
+      context.params[key] = parseInt(context.params[key], 10);
     }
   }
 };
@@ -340,7 +392,7 @@ Route.prototype.parseParams = function(ctx){
  * XXX: Implement template caching. This will only cache
  *      the raw html files and hold it in memory.
  *      The bundler will delete any caches of templates
- *      if the files changes.
+ *      if the files change.
  * XXX: Automatically call this method if they didn't call
  *      it?
  * XXX: The `name` parameter corresponds to the main view.
@@ -348,48 +400,17 @@ Route.prototype.parseParams = function(ctx){
  * Render a specific view.
  * @param  {String} name
  */
-Route.prototype.render = function(name) {
-
-  this.format('html', function(context)
-  {
+Route.prototype.render = function(name){
+  this.format('html', function(context){
     view.context = context;
     view.render(name);
   });
 
-  this.on('request', function(context)
-  {
+  this.on('request', function(context){
     context.render();
   });
 
 };
-
-
-function series(self, callbacks, context, done) {
-  if (!callbacks.length) return done();
-
-  var i = 0
-    , fn;
-
-  function next(err) {
-    if (err || context.isCancelled || context.errors) {
-      done(err || context.errors);
-      return;
-    }
-
-    if (fn = callbacks[i++]) {
-      if (2 == fn.length) {
-        fn.call(self, context, next);
-      } else {
-        fn.call(self, context);
-        next();
-      }
-    } else {
-      done();
-    }
-  }
-
-  next();
-}
 
 /**
  * Apply all mixins
