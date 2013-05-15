@@ -51,14 +51,18 @@ var mixins = [];
  */
 
 function route(name, path, options){
-  if (typeof name === "object") return;
   if (1 == arguments.length && exports.collection[name])
     return exports.collection[name];
 
   options || (options = {});
 
+  var fn;
+
   if ('/' == name.charAt(0)) {
-    options.name = path;
+    if ('function' === typeof path)
+      fn = path;
+    else
+      options.name = path;
     options.path = name;
   } else {
     options.name = name;
@@ -66,6 +70,7 @@ function route(name, path, options){
   }
 
   var instance = new Route(options);
+  if (fn) instance.on('request', fn);
   exports.collection[instance.id] = instance;
   exports.collection.push(instance);
   exports.emit('define', instance);
