@@ -296,7 +296,7 @@ Route.prototype.match = function(path, params){
       : m[i];
 
     if (key) {
-      params[key.name] = undefined !== params[key.name]
+      params[key.name] = params.hasOwnProperty(key.name) && undefined !== params[key.name]
         ? params[key.name]
         : val;
     } else {
