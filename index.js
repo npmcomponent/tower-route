@@ -3,9 +3,9 @@
  * Module dependencies.
  */
 
-var Emitter = require('tower-emitter')
-  , pathToRegexp = require('path-to-regexp')
-  , param = require('tower-param')
+var Emitter = require('tower-emitter');
+var pathToRegexp = require('path-to-regexp');
+var param = require('tower-param');
   //, series = require('part-async-series');
 
 /**
@@ -51,14 +51,14 @@ var mixins = [];
  */
 
 function route(name, path, options){
-  if (1 == arguments.length && exports.collection[name])
+  if (1 === arguments.length && exports.collection[name])
     return exports.collection[name];
 
   options || (options = {});
 
   var fn;
 
-  if ('/' == name.charAt(0)) {
+  if ('/' === name.charAt(0)) {
     if ('function' === typeof path)
       fn = path;
     else
@@ -78,13 +78,19 @@ function route(name, path, options){
 }
 
 /**
+ * Mixin `Emitter`.
+ */
+
+Emitter(exports);
+
+/**
  * Add mixin to exports.collection.
  */
 
 exports.use = function(fn){
   mixins.push(fn);
   return exports;
-}
+};
 
 /**
  * Remove all exports.collection.
@@ -93,13 +99,7 @@ exports.use = function(fn){
 exports.clear = function(){
   mixins.length = 0;
   exports.collection.length = 0;
-}
-
-/**
- * Mixin `Emitter`.
- */
-
-Emitter(exports);
+};
 
 /**
  * Instantiate a new `Route`.
@@ -111,10 +111,10 @@ function Route(options){
   this.path = options.path;
   this.method = options.method || 'GET';
   this.regexp = pathToRegexp(
-      options.path
-    , this.keys = []
-    , options.sensitive
-    , options.strict);
+    options.path,
+    this.keys = [],
+    options.sensitive,
+    options.strict);
 
   this.formats = {};
   this.params = [];
@@ -122,11 +122,11 @@ function Route(options){
   this.middlewares = [];
   this.validators = [];
   this.actions = {
-      enter: []
-    , exit: []
-    , request: []
-    , connect: []
-    , disconnect: []
+    enter: [],
+    exit: [],
+    request: [],
+    connect: [],
+    disconnect: []
   };
 }
 
@@ -148,7 +148,7 @@ Emitter(Route.prototype);
 Route.prototype.param = function(name, type, options){
   this.context = this.params[name] = param(name, type, options);
   return this;
-}
+};
 
 /**
  * Define a validator.
@@ -167,7 +167,7 @@ Route.prototype.validate = function(key, val){
     this.context.validator(key, val);
 
   return this;
-}
+};
 
 /**
  * Append a validator function to the stack.
@@ -180,7 +180,7 @@ exports.validator = function(fn){
   // XXX: just a function in this case, but could handle more.
   this.validators.push(fn);
   return this;
-}
+};
 
 /**
  * The accepted HTTP methods.
@@ -193,7 +193,7 @@ Route.prototype.type = function(type){
   // maybe it should accept an array?
   this.method = type;
   return this;
-}
+};
 
 /**
  * Function to process the incoming request.
@@ -209,7 +209,7 @@ Route.prototype.type = function(type){
 Route.prototype.use = function(fn){
   this.middlewares.push(fn);
   return this;
-}
+};
 
 /**
  * Accepted `Content-Type`s.
@@ -228,7 +228,7 @@ Route.prototype.accept = function(){
     this.accepts.push(arguments[i]);
 
   return this;
-}
+};
 
 /**
  * Specify how to format the data for the response.
@@ -254,7 +254,7 @@ Route.prototype.format = function(format, fn){
   }
 
   return this;
-}
+};
 
 Route.prototype.action = function(name){
   var action = this.actions[name] || (this.actions[name] = []);
@@ -264,7 +264,7 @@ Route.prototype.action = function(name){
   }
 
   return this;
-}
+};
 
 /**
  * Clear the chainable API context.
@@ -273,7 +273,7 @@ Route.prototype.action = function(name){
 Route.prototype.self = function(){
   context = this;
   return this;
-}
+};
 
 /**
  * Check if this route matches `path`, if so
