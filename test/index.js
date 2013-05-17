@@ -1,5 +1,5 @@
-var route = require('..')
-  , assert = require('assert');
+var route = require('..');
+var assert = require('assert');
 
 describe('serverTest', function(){
   beforeEach(route.clear);
