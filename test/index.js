@@ -60,8 +60,8 @@ describe('serverTest', function(){
 
   it('should parse params', function(done){
     var params = {
-        likes: '10'
-      , published: '0'
+      likes: '10',
+      published: '0'
     };
 
     var context = { path: '/posts', params: params };
@@ -79,9 +79,9 @@ describe('serverTest', function(){
   describe('events', function(){
     it('should execute enter -> entered -> exit -> exited', function(done){
       var context = {
-          path: '/'
-        , params: {}
-        , format: 'json'
+        path: '/',
+        params: {},
+        format: 'json'
       };
 
       route('/', 'index')
@@ -129,9 +129,9 @@ describe('serverTest', function(){
   describe('format', function(){
     it('should serialize to JSON', function(done){
       var context = {
-          path: '/'
-        , params: {}
-        , format: 'json'
+        path: '/',
+        params: {},
+        format: 'json'
       };
 
       route('/', 'index')
