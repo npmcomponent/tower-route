@@ -20,7 +20,7 @@ $ component install tower/route
 var route = require('tower-route');
 
 route('/welcome')
-  .on('exec', function(context, next){
+  .action(function(context, next){
     context.render({ title: 'Hello World' });
   });
 ```
