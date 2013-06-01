@@ -222,7 +222,7 @@ Route.prototype.use = function(fn){
 
 Route.prototype.accept = function(){
   var n = arguments.length
-    , accepts = new Array(n);
+  var accepts = new Array(n);
 
   for (var i = 0; i < n; i++)
     this.accepts.push(arguments[i]);
@@ -236,8 +236,8 @@ Route.prototype.accept = function(){
  * Example:
  *
  *    route('/', 'index')
- *      .format('json', function(){
- *        this.render({ hello: 'world' });
+ *      .format('json', function(content){
+ *        content.render({ hello: 'world' });
  *      })
  *
  * @param {String} format
@@ -245,12 +245,12 @@ Route.prototype.accept = function(){
  * @api public
  */
 
-Route.prototype.format = function(format, fn){
-  if ('function' == typeof format) {
-    this.formats['*'] = format;
+Route.prototype.format = function(name, fn){
+  if ('function' === typeof name) {
+    this.formats['*'] = name;
   } else {
-    this.formats[format] = fn;
-    this.accepts.push(format);
+    this.formats[name] = fn;
+    this.accepts.push(name);
   }
 
   return this;
@@ -286,14 +286,16 @@ Route.prototype.self = function(){
  */
 
 Route.prototype.match = function(path, params){
-  var keys = this.keys
-    , qsIndex = path.indexOf('?')
-    , pathname = ~qsIndex ? path.slice(0, qsIndex) : path
-    , m = (this.regexp instanceof RegExp) ? this.regexp.exec(pathname) : new RegExp(this.regexp).exec(pathname);
+  var keys = this.keys;
+  var qsIndex = path.indexOf('?');
+  var pathname = ~qsIndex ? path.slice(0, qsIndex) : path;
+  var m = this.regexp instanceof RegExp
+    ? this.regexp.exec(pathname)
+    : new RegExp(this.regexp).exec(pathname);
 
   if (!m) return false;
 
-  for (var i = 1, len = m.length; i < len; ++i) {
+  for (var i = 1, n = m.length; i < n; ++i) {
     var key = keys[i - 1];
 
     var val = 'string' == typeof m[i]
@@ -320,7 +322,8 @@ Route.prototype.match = function(path, params){
  */
 
 Route.prototype.handle = function(context, next){
-  if (!this.match(context.path, context.params)) return next();
+  if (!this.match(context.path, context.params))
+    return next();
 
   this.parseParams(context);
 
@@ -359,49 +362,20 @@ Route.prototype.handle = function(context, next){
 };
 
 /**
- * Alias for action.
- */
-Route.prototype.on = Route.prototype.action;
-
-/**
  * Parse the params from a given context.
  *
  * @param {Context} context
  * @api public
  */
+
 Route.prototype.parseParams = function(context){
   for (var key in this.params) {
     if (context.params.hasOwnProperty(key)) {
-      // TODO: serialize params
-      // tower typecast
+      // XXX: serialize params
+      // tower-type
       context.params[key] = parseInt(context.params[key], 10);
     }
   }
-};
-
-/**
- * XXX: tmp for now.
- * XXX: Implement template caching. This will only cache
- *      the raw html files and hold it in memory.
- *      The bundler will delete any caches of templates
- *      if the files change.
- * XXX: Automatically call this method if they didn't call
- *      it?
- * XXX: The `name` parameter corresponds to the main view.
- *      Fetch that view NOT the template.
- * Render a specific view.
- * @param  {String} name
- */
-
-Route.prototype.render = function(name){
-  this.format('html', function(context){
-    view.context = context;
-    view.render(name);
-  });
-
-  this.on('request', function(context){
-    context.render();
-  });
 };
 
 /**
