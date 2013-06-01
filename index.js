@@ -6,7 +6,7 @@
 var Emitter = require('tower-emitter');
 var pathToRegexp = require('path-to-regexp');
 var param = require('tower-param');
-  //, series = require('part-async-series');
+var series = require('part-async-series');
 
 /**
  * Expose `route`.
@@ -348,14 +348,14 @@ Route.prototype.handle = function(context, next){
     // req.subdomains
     // req.acceptedLanguages for tower-inflector
     // TODO: handle multiple formats.
-    series(self, callbacks, context, next);
+    series(callbacks, context, next, self);
   } catch (e) {
     //self.emit(500, e);
     // Errors that occurs won't be caught but an error
     // within the `series` method will.
     throw e;
     context.error = e;
-    series(self, self.actions['500'], context, function(){})
+    series(self.actions['500'], context, function(){}, self)
   }
   
   return true;
@@ -387,41 +387,3 @@ exports.on('define', function(route){
     mixins[i](route);
   }
 });
-
-/**
- * Function to run a set of callbacks on an object
- * with a specified context.
- * A done callback is called at the very end.
- * 
- * @param {Object} self
- * @param {Array of callbacks} callbacks
- * @param {Context} context
- * @param {Function} done
- */
-
-function series(self, callbacks, context, done){
-  if (!callbacks.length) return done();
-
-  var i = 0
-    , fn;
-
-  function next(err){
-    if (err || context.isCancelled || context.errors) {
-      done(err || context.errors);
-      return;
-    }
-
-    if (fn = callbacks[i++]) {
-      if (2 == fn.length) {
-        fn.call(self, context, next);
-      } else {
-        fn.call(self, context);
-        next();
-      }
-    } else {
-      done();
-    }
-  }
-
-  next();
-}
