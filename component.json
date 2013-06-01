@@ -16,6 +16,10 @@
     "tower/param": "*",
     "part/async-series": "*"
   },
+  "development": {
+    "visionmedia/mocha": "*",
+    "timoxley/assert": "*"
+  },
   "scripts": ["index.js"],
   "license": "MIT"
 }

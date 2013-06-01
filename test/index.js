@@ -1,5 +1,11 @@
-var route = require('..');
-var assert = require('assert');
+
+if ('undefined' === typeof window) {
+  var route = require('..');
+  var assert = require('assert');
+} else {
+  var route = require('tower-route');
+  var assert = require('timoxley-assert');
+}
 
 describe('serverTest', function(){
   beforeEach(route.clear);
