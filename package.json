@@ -1,10 +1,10 @@
 {
   "name": "tower-route",
-  "version": "0.5.0pre",
+  "version": "0.1.0pre",
   "main": "./index.js",
   "dependencies": {
-    "tower-emitter": "~0.5.0pre",
-    "tower-param": "~0.5.0pre",
+    "tower-emitter": "~0.1.0pre",
+    "tower-param": "~0.1.0pre",
     "path-to-regexp": "*",
     "part-async-series": "*"
   }
