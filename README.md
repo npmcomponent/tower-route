@@ -1,5 +1,7 @@
 # Tower Route
 
+Tiny route component for client and server.
+
 ## Installation
 
 node.js:
@@ -33,7 +35,7 @@ route('/welcome')
   });
 ```
 
-Can name them (makes it so you don't have to mess with url strings in code, to redirect/transition/etc.:
+You can also name them (makes it so you don't have to mess with url strings in code, to redirect/transition/etc.:
 
 ```js
 route('new-customer', '/welcome');
