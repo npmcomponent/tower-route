@@ -70,7 +70,7 @@ function route(name, path, options){
   }
 
   var instance = new Route(options);
-  if (fn) instance.on('request', fn);
+  if (fn) instance.action(fn);
   exports.collection[instance.id] = instance;
   exports.collection.push(instance);
   exports.emit('define', instance);
@@ -121,13 +121,7 @@ function Route(options){
   this.accepts = [];
   this.middlewares = [];
   this.validators = [];
-  this.actions = {
-    enter: [],
-    exit: [],
-    request: [],
-    connect: [],
-    disconnect: []
-  };
+  this.actions = {};
 }
 
 /**
@@ -176,7 +170,7 @@ Route.prototype.validate = function(key, val){
  * @return {this}
  */
 
-exports.validator = function(fn){
+Route.prototype.validator = function(fn){
   // XXX: just a function in this case, but could handle more.
   this.validators.push(fn);
   return this;
@@ -256,13 +250,30 @@ Route.prototype.format = function(name, fn){
   return this;
 };
 
-Route.prototype.action = function(name){
-  var action = this.actions[name] || (this.actions[name] = []);
-
-  for (var i = 1, n = arguments.length; i < n; i++) {
-    action.push(arguments[i]);
+Route.prototype.before = function(name, fn){
+  if ('function' === typeof name) {
+    fn = name;
+    name = 'request';
   }
+  this._action(name).before.push(fn);
+  return this;
+};
 
+Route.prototype.action = function(name, fn){
+  if ('function' === typeof name) {
+    fn = name;
+    name = 'request';
+  }
+  this._action(name).fn = fn;
+  return this;
+};
+
+Route.prototype.after = function(name, fn){
+  if ('function' === typeof name) {
+    fn = name;
+    name = 'request';
+  }
+  this._action(name).after.push(fn);
   return this;
 };
 
@@ -335,10 +346,12 @@ Route.prototype.handle = function(context, next){
   var self = this;
 
   try {
+    var actions = self.actions[context.event];
     var callbacks = self.middlewares.concat(
-      self.actions['enter'],
-      self.actions[context.event],
-      self.formats['*'] ? [self.formats['*']] : []
+      actions.before,
+      [actions.fn],
+      //  self.formats['*'] ? [self.formats['*']] : []
+      actions.after
     );
 
     // req.accepted[0].subtype
@@ -376,6 +389,17 @@ Route.prototype.parseParams = function(context){
       context.params[key] = parseInt(context.params[key], 10);
     }
   }
+};
+
+/**
+ * Get action object for route.
+ *
+ * @api private
+ */
+
+Route.prototype._action = function(name){
+  return this.actions[name] ||
+    (this.actions[name] = { before: [], after: [] });
 };
 
 /**
