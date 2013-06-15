@@ -44,9 +44,10 @@ var mixins = [];
  *    route({ path: '/posts', name: 'posts.index', method: 'GET' })
  *    route('posts.index')
  *
- * @param {String} name
- * @param {String} path
- * @param {Object} [options]
+ * @param {String} name Route name.
+ * @param {String} path Route path delimited with periods `.`.
+ * @param {Object} options Route options.
+ * @return {Route} Route instance.
  * @api public
  */
 
@@ -85,6 +86,11 @@ Emitter(exports);
 
 /**
  * Add mixin to exports.collection.
+ *
+ * @chainable
+ * @param {Function} fn Function to add to list of mixins.
+ * @return {Function} exports The main `route` function.
+ * @api public
  */
 
 exports.use = function(fn){
@@ -94,6 +100,8 @@ exports.use = function(fn){
 
 /**
  * Remove all exports.collection.
+ *
+ * @api public
  */
 
 exports.clear = function(){
@@ -102,7 +110,12 @@ exports.clear = function(){
 };
 
 /**
- * Instantiate a new `Route`.
+ * Class representing a route.
+ *
+ * @class
+ *
+ * @param {Object} options Route options.
+ * @api public
  */
 
 function Route(options){
@@ -136,6 +149,10 @@ Emitter(Route.prototype);
  * This is roughly equivalent to an attribute
  * on a model, e.g. `model('Post').attr(x)`.
  *
+ * @chainable
+ * @param {String} name A param name.
+ * @param {String} type A param type.
+ * @return {Route}
  * @api public
  */
 
@@ -147,9 +164,10 @@ Route.prototype.param = function(name, type, options){
 /**
  * Define a validator.
  *
+ * @chainable
  * @param {String} key Name of the operator for assertion.
  * @param {Mixed} val
- * @return {this}
+ * @return {Route}
  */
 
 Route.prototype.validate = function(key, val){
@@ -166,8 +184,9 @@ Route.prototype.validate = function(key, val){
 /**
  * Append a validator function to the stack.
  *
+ * @chainable
  * @param {Function} fn
- * @return {this}
+ * @return {Route}
  */
 
 Route.prototype.validator = function(fn){
@@ -179,7 +198,9 @@ Route.prototype.validator = function(fn){
 /**
  * The accepted HTTP methods.
  *
- * @param {String} type
+ * @chainable
+ * @param {Object} type
+ * @return {Route}
  * @api public
  */
 
@@ -190,13 +211,15 @@ Route.prototype.type = function(type){
 };
 
 /**
- * Function to process the incoming request.
+ * Add a function to process the incoming request.
  *
  * If called multiple times they will be executed
  * in sequence. They can be asynchronous, just
  * pass a `done` argument to `fn`.
  *
- * @param {Function} fn
+ * @chainable
+ * @param {Function} fn A function to process the incoming request.
+ * @return {Route}
  * @api public
  */
 
@@ -210,7 +233,9 @@ Route.prototype.use = function(fn){
  *
  * If not specified, it will accept any.
  *
- * @param {String|Arguments} arguments
+ * @chainable
+ * @param {Arguments} arguments The default JavaScript function argument list.
+ * @return {Route}
  * @api public
  */
 
@@ -234,8 +259,10 @@ Route.prototype.accept = function(){
  *        content.render({ hello: 'world' });
  *      })
  *
- * @param {String} format
- * @param {Function} fn
+ * @chainable
+ * @param {String} name The data format name.
+ * @param {Function} fn The function to respond to the data format.
+ * @return {Route}
  * @api public
  */
 
@@ -259,6 +286,15 @@ Route.prototype.before = function(name, fn){
   return this;
 };
 
+/**
+ * Add an action to the actions list.
+ *
+ * @chainable
+ * @param name Action name.
+ * @return {Route}
+ * @api public
+ */
+
 Route.prototype.action = function(name, fn){
   if ('function' === typeof name) {
     fn = name;
@@ -279,6 +315,10 @@ Route.prototype.after = function(name, fn){
 
 /**
  * Clear the chainable API context.
+ *
+ * @chainable
+ * @return {Route}
+ * @api public
  */
 
 Route.prototype.self = function(){
@@ -290,9 +330,9 @@ Route.prototype.self = function(){
  * Check if this route matches `path`, if so
  * populate `params`.
  *
- * @param {String} path
- * @param {Array} params
- * @return {Boolean}
+ * @param {String} path A path.
+ * @param {Array} params Array of param objects.
+ * @return {Boolean} true if this route matches `path`, else false.
  * @api private
  */
 
@@ -329,6 +369,8 @@ Route.prototype.match = function(path, params){
  * Process a request given a context.
  *
  * @param {Context} context
+ * @param {Function} next Function used to handle non-matching context path and params.
+ * @return {Boolean} true if a request can be processed, else falsy.
  * @api public
  */
 
@@ -377,7 +419,7 @@ Route.prototype.handle = function(context, next){
 /**
  * Parse the params from a given context.
  *
- * @param {Context} context
+ * @param {Context} context A context.
  * @api public
  */
 
