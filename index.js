@@ -47,6 +47,7 @@ var mixins = [];
  * @param {String} name Route name.
  * @param {String} path Route path delimited with periods `.`.
  * @param {Object} options Route options.
+ * @return {Route} Route instance.
  * @api public
  */
 
@@ -88,7 +89,8 @@ Emitter(exports);
  *
  * @chainable
  * @param {Function} fn Function to add to list of mixins.
- * @return {Function} self.
+ * @return {Function} exports The main `route` function.
+ * @api public
  */
 
 exports.use = function(fn){
@@ -98,6 +100,8 @@ exports.use = function(fn){
 
 /**
  * Remove all exports.collection.
+ *
+ * @api public
  */
 
 exports.clear = function(){
@@ -111,6 +115,7 @@ exports.clear = function(){
  * @class
  *
  * @param {Object} options Route options.
+ * @api public
  */
 
 function Route(options){
@@ -150,8 +155,10 @@ Emitter(Route.prototype);
  * This is roughly equivalent to an attribute
  * on a model, e.g. `model('Post').attr(x)`.
  *
+ * @chainable
  * @param {String} name A param name.
  * @param {String} type A param type.
+ * @return {Route}
  * @api public
  */
 
@@ -163,9 +170,10 @@ Route.prototype.param = function(name, type, options){
 /**
  * Define a validator.
  *
+ * @chainable
  * @param {String} key Name of the operator for assertion.
  * @param {Mixed} val
- * @return {this}
+ * @return {Route}
  */
 
 Route.prototype.validate = function(key, val){
@@ -182,8 +190,9 @@ Route.prototype.validate = function(key, val){
 /**
  * Append a validator function to the stack.
  *
+ * @chainable
  * @param {Function} fn
- * @return {this}
+ * @return {Route}
  */
 
 exports.validator = function(fn){
@@ -197,7 +206,7 @@ exports.validator = function(fn){
  *
  * @chainable
  * @param {Object} type
- * @return {Route} self.
+ * @return {Route}
  * @api public
  */
 
@@ -216,7 +225,7 @@ Route.prototype.type = function(type){
  *
  * @chainable
  * @param {Function} fn A function to process the incoming request.
- * @return {Route} self.
+ * @return {Route}
  * @api public
  */
 
@@ -232,7 +241,7 @@ Route.prototype.use = function(fn){
  *
  * @chainable
  * @param {Arguments} arguments The default JavaScript function argument list.
- * @return {Route} self.
+ * @return {Route}
  * @api public
  */
 
@@ -259,7 +268,7 @@ Route.prototype.accept = function(){
  * @chainable
  * @param {String} name The data format name.
  * @param {Function} fn The function to respond to the data format.
- * @return {Route} self.
+ * @return {Route}
  * @api public
  */
 
@@ -279,7 +288,8 @@ Route.prototype.format = function(name, fn){
  *
  * @chainable
  * @param name Action name.
- * @return {Route} self.
+ * @return {Route}
+ * @api public
  */
 
 Route.prototype.action = function(name){
@@ -296,7 +306,8 @@ Route.prototype.action = function(name){
  * Clear the chainable API context.
  *
  * @chainable
- * @return {Route} self.
+ * @return {Route}
+ * @api public
  */
 
 Route.prototype.self = function(){
