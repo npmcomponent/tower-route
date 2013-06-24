@@ -290,7 +290,8 @@ Route.prototype.before = function(name, fn){
  * Add an action to the actions list.
  *
  * @chainable
- * @param name Action name.
+ * @param {String} name Action name.
+ * @param {Function} fn Function to handle action.
  * @return {Route}
  * @api public
  */
@@ -368,7 +369,7 @@ Route.prototype.match = function(path, params){
 /**
  * Process a request given a context.
  *
- * @param {Context} context
+ * @param {Context} context A context.
  * @param {Function} next Function used to handle non-matching context path and params.
  * @return {Boolean} true if a request can be processed, else falsy.
  * @api public
@@ -436,6 +437,7 @@ Route.prototype.parseParams = function(context){
 /**
  * Get action object for route.
  *
+ * @param {String} name A route name.
  * @api private
  */
 
