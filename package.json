@@ -1,11 +1,16 @@
 {
   "name": "tower-route",
-  "version": "0.1.0pre",
+  "version": "0.1.0",
   "main": "./index.js",
+  "keywords": ["routing", "mvc"],
   "dependencies": {
-    "tower-emitter": "~0.1.0pre",
-    "tower-param": "~0.1.0pre",
+    "tower-emitter": "~0.1.0",
+    "tower-param": "~0.1.0",
     "path-to-regexp": "*",
     "part-async-series": "*"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "http://github.com/tower/route.git"
   }
 }

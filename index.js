@@ -51,7 +51,7 @@ var mixins = [];
  * @api public
  */
 
-function route(name, path, options){
+function route(name, path, options) {
   if (1 === arguments.length && exports.collection[name])
     return exports.collection[name];
 
