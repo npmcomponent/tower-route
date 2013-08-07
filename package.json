@@ -1,11 +1,11 @@
 {
   "name": "tower-route",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "main": "./index.js",
   "keywords": ["routing", "mvc"],
   "dependencies": {
-    "tower-emitter": "~0.1.0",
-    "tower-param": "~0.1.0",
+    "tower-emitter": "*",
+    "tower-param": "*",
     "path-to-regexp": "*",
     "part-async-series": "*"
   },

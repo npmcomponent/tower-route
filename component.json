@@ -2,7 +2,7 @@
   "name": "tower-route",
   "repo": "tower/route",
   "description": "Tower Route component",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "keywords": [
     "tower",
     "mvc",
@@ -12,8 +12,8 @@
   ],
   "dependencies": {
     "component/path-to-regexp": "*",
-    "tower/emitter": "0.1.0",
-    "tower/param": "0.1.1",
+    "tower/emitter": "*",
+    "tower/param": "*",
     "part/async-series": "*"
   },
   "development": {

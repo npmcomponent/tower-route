@@ -70,12 +70,12 @@ function route(name, path, options) {
     options.path = path;
   }
 
-  var instance = new Route(options);
-  if (fn) instance.action(fn);
-  exports.collection[instance.id] = instance;
-  exports.collection.push(instance);
-  exports.emit('define', instance);
-  return instance;
+  var obj = new Route(options);
+  if (fn) obj.action(fn);
+  exports.collection[obj.id] = obj;
+  exports.collection.push(obj);
+  exports.emit('define', obj);
+  return obj;
 }
 
 /**
@@ -157,7 +157,8 @@ Emitter(Route.prototype);
  */
 
 Route.prototype.param = function(name, type, options){
-  this.context = this.params[name] = param(name, type, options);
+  // this.context = 
+  this.params[name] = param(name, type, options);
   return this;
 };
 
@@ -315,6 +316,18 @@ Route.prototype.after = function(name, fn){
 };
 
 /**
+ * Define a param as a "constraint".
+ *
+ * This means the parameter will be parsed into
+ * an object ready for a query.
+ */
+
+Route.prototype.constraint = function(left, operators){
+  // XXX
+  return this;
+};
+
+/**
  * Clear the chainable API context.
  *
  * @chainable
@@ -379,37 +392,33 @@ Route.prototype.handle = function(context, next){
   if (!this.match(context.path, context.params))
     return next();
 
-  this.parseParams(context);
+  if (context.req)
+    context.params = context.req.query;
+
+  var self = this;
 
   context.event || (context.event = 'request');
   context.route = this;
 
-  // TODO: defaults for exports.collection?
-  // if (this._enter.length) {
-  var self = this;
+  var actions = self.actions[context.event];
+  var fns = self.middlewares.concat(
+    [self.parseParams, self._validate],
+    actions.before,
+    [actions.fn],
+    //  self.formats['*'] ? [self.formats['*']] : []
+    actions.after
+  );
 
   try {
-    var actions = self.actions[context.event];
-    var callbacks = self.middlewares.concat(
-      actions.before,
-      [actions.fn],
-      //  self.formats['*'] ? [self.formats['*']] : []
-      actions.after
-    );
-
     // req.accepted[0].subtype
     // req.ip
     // http://expressjs.com/api.html
     // req.xhr
     // req.subdomains
     // req.acceptedLanguages for tower-inflector
-    // TODO: handle multiple formats.
-    series(callbacks, context, next, self);
+    // XXX: handle multiple formats.
+    series(fns, context, next, self);
   } catch (e) {
-    //self.emit(500, e);
-    // Errors that occurs won't be caught but an error
-    // within the `series` method will.
-    throw e;
     context.error = e;
     series(self.actions['500'], context, function(){}, self)
   }
@@ -424,12 +433,34 @@ Route.prototype.handle = function(context, next){
  * @api public
  */
 
-Route.prototype.parseParams = function(context){
-  for (var key in this.params) {
+Route.prototype.parseParams = function(context, fn){
+  var params = this.params;
+  var keys = [];
+  for (var key in params) keys.push(key);
+
+  var i = 0;
+
+  function next() {
+    var key = keys[i++];
+    if (!key) return fn();
+
     if (context.params.hasOwnProperty(key)) {
-      // XXX: serialize params
-      // tower-type
-      context.params[key] = parseInt(context.params[key], 10);
+      params[key].typecast(context.params[key], function(err, val){
+        context.params[key] = val;
+        next();
+      });
+    } else {
+      next();
+    }
+  }
+
+  next();
+};
+
+Route.prototype._validate = function(context){
+  for (var i = 0, n = this.validators.length; i < n; i++) {
+    if (false === this.validators[i](context)) {
+      throw new Error('Invalid route');
     }
   }
 };

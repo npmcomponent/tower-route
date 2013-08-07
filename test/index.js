@@ -7,6 +7,8 @@ if ('undefined' === typeof window) {
   var assert = require('timoxley-assert');
 }
 
+var noop = function(){};
+
 describe('serverTest', function(){
   beforeEach(route.clear);
 
@@ -58,10 +60,14 @@ describe('serverTest', function(){
     assert(['json', 'html'].join(',') == route('users.show').accepts.join(','));
   });
 
-  it('should parse params', function(done){
+  it('should parse params', function(){
     var params = {
       likes: '10',
-      published: '0'
+      published: '1',
+      draft: '0',
+      booleanWithDefault: null,
+      booleanIfBlank: '',
+      aString: 10
     };
 
     var context = { path: '/posts', params: params };
@@ -69,11 +75,18 @@ describe('serverTest', function(){
     route('/posts', 'posts.index')
       .param('likes', 'integer')
       .param('published', 'boolean')
-      .handle(context, function(){
-        assert(10 === params.likes);
-        //assert(false === params.published);
-        done();
-      });
+      .param('draft', 'boolean')
+      .param('booleanWithDefault', 'boolean', true)
+      .param('booleanIfBlank', 'boolean')
+      .param('aString', 'string')
+      .parseParams(context, noop);
+
+    assert(10 === params.likes);
+    assert(true === params.published);
+    assert(false === params.draft);
+    //assert(true === params.booleanWithDefault);
+    assert(false === params.booleanIfBlank);
+    assert('10' === params.aString);
   });
 
   describe('events', function(){
