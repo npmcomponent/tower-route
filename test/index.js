@@ -89,6 +89,27 @@ describe('serverTest', function(){
     assert('10' === params.aString);
   });
 
+  it('should validate', function(done){
+    var context = { path: '/validate', params: {} };
+
+    route('/validate')
+      .validate(function(ctx, fn){
+        setTimeout(function(){
+          ctx.one = true;
+          fn();
+        }, 10);
+      })
+      .validate(function(ctx){
+        ctx.two = true;
+      })
+      .action(function(ctx){})
+      .handle(context, function(ctx){
+        assert(true === context.one);
+        assert(true === context.two);
+        done();
+      });
+  });
+
   describe('events', function(){
     it('should execute enter -> entered -> exit -> exited', function(done){
       var context = {

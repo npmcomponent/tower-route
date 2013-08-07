@@ -457,12 +457,24 @@ Route.prototype.parseParams = function(context, fn){
   next();
 };
 
-Route.prototype._validate = function(context){
-  for (var i = 0, n = this.validators.length; i < n; i++) {
-    if (false === this.validators[i](context)) {
-      throw new Error('Invalid route');
+Route.prototype._validate = function(ctx, fn){
+  var validators = this.validators;
+
+  var i = 0;
+
+  function next() {
+    var validator = validators[i++];
+    if (!validator) return fn();
+    if (2 === validator.length) {
+      validator(ctx, next);
+    } else {
+      if (false === validator(ctx))
+        throw new Error('Invalid route');
+      next();
     }
   }
+
+  next();
 };
 
 /**
