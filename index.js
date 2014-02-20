@@ -3,10 +3,10 @@
  * Module dependencies.
  */
 
-var Emitter = require('tower-emitter');
-var pathToRegexp = require('path-to-regexp');
-var param = require('tower-param');
-var series = require('part-async-series');
+// commented out by npm-component: var Emitter = require('tower-emitter');
+var pathToRegexp = require('component-path-to-regexp');
+// commented out by npm-component: var param = require('tower-param');
+// commented out by npm-component: var series = require('part-async-series');
 
 /**
  * Expose `route`.

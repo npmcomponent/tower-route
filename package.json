@@ -1,16 +1,19 @@
 {
   "name": "tower-route",
+  "description": "Tower Route component",
   "version": "0.1.2",
-  "main": "./index.js",
-  "keywords": ["routing", "mvc"],
+  "keywords": [
+    "tower",
+    "mvc",
+    "router",
+    "node.js",
+    "browser"
+  ],
   "dependencies": {
-    "tower-emitter": "*",
-    "tower-param": "*",
-    "path-to-regexp": "*",
-    "part-async-series": "*"
+    "component-path-to-regexp": "git://github.com/npmcomponent/component-path-to-regexp.git",
+    "tower-emitter": "git://github.com/npmcomponent/tower-emitter.git",
+    "tower-param": "git://github.com/npmcomponent/tower-param.git",
+    "part-async-series": "git://github.com/npmcomponent/part-async-series.git"
   },
-  "repository": {
-    "type" : "git",
-    "url" : "http://github.com/tower/route.git"
-  }
+  "license": "MIT"
 }
